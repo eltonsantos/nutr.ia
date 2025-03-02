@@ -9,7 +9,7 @@ export default function Page() {
       <div className="flex-1 flex flex-col">
         
         <MenuHeader />
-        
+
         <main className="flex-1 p-6">
           <p className="text-gray-700">Gerencie sua nutrição com facilidade.</p>
           
@@ -25,16 +25,17 @@ export default function Page() {
             </select>
             <select className="w-full p-2 border rounded mb-2">
               <option>Emagrecimento</option>
-              <option>Manutenção</option>
-              <option>Ganho de Massa</option>
+              <option>Hipertrofia</option>
+              <option>Hipertrofia e Definição</option>
+              <option>Definição</option>
             </select>
             <select className="w-full p-2 border rounded mb-2">
-              <option>Sedentário</option>
-              <option>Leve</option>
-              <option>Moderado</option>
-              <option>Intenso</option>
+              <option>Sedentário (pouco ou nenhuma atividade física)</option>
+              <option>Levemente ativo (exercícios 1 a 3 vezes na semana)</option>
+              <option>Moderadamente ativo (exercícios 3 a 5 vezes na semana)</option>
+              <option>Altamente ativo (exercícios 5 a 7 vezes por semana)</option>
             </select>
-            <button className="mt-4 px-6 py-2 bg-green-600 text-white rounded">Gerar Dieta</button>
+            <button className="mt-4 px-6 py-2 bg-green-600 text-white rounded cursor-pointer">Gerar Dieta</button>
           </form>
         </main>
       </div>
