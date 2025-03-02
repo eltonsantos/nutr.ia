@@ -47,6 +47,22 @@ export function NutritionForm() {
       <NutritionModal
         isOpen={isNutritionModalOpen}
         onRequestClose={() => setIsNutritionModalOpen(false)}
+        data={{
+          name: "João Silva",
+          height: "175",
+          weight: "70",
+          age: "25",
+          objective: "Ganho de Massa",
+          activityLevel: "Moderado",
+          meals: [
+            { name: "Café da Manhã", time: "08:00", foods: ["2 Ovos", "3 Pão integral", "1 Café"] },
+            { name: "Almoço", time: "12:30", foods: ["Arroz", "Feijão", "1/2g de Frango", "Salada"] },
+            { name: "Lancha da Tarde", time: "15:30", foods: ["Arroz", "Feijão", "1kg de Frango", "Salada"] },
+            { name: "Jantar", time: "19:00", foods: ["100g de Arroz", "100g de Feijão", "Frango", "Salada"] },
+            { name: "Ceia", time: "22:00", foods: ["200g de Arroz", "50g de Feijão", "1 Frango", "Salada a vontade"] },
+          ],
+          supplements: ["Whey Protein", "Creatina"]
+        }}
       />
     </main>
   )
