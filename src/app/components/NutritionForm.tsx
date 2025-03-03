@@ -4,6 +4,25 @@ import { useState } from "react";
 import { NutritionModal } from "./NutritionModal";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { z } from "zod";
+
+const formSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  weight: z.string()
+    .min(1, "Peso é obrigatório")
+    .refine(val => /^\d+(\.\d+)?$/.test(val), "Peso deve ser um número (ex: 70 ou 70.5)"),
+  height: z.string()
+    .min(1, "Altura é obrigatória")
+    .refine(val => /^\d+(\.\d+)?$/.test(val), "Altura deve ser um número (ex: 175 ou 1.75)"),
+  age: z.string()
+    .min(1, "Idade é obrigatória")
+    .refine(val => /^\d+$/.test(val), "Idade deve ser um número inteiro"),
+  gender: z.string().refine(val => val !== "" && val !== "Selecione o sexo", "Selecione um sexo"),
+  objective: z.string().refine(val => val !== "" && val !== "Selecione o objetivo", "Selecione um objetivo"),
+  activityLevel: z.string().refine(val => val !== "" && val !== "Selecione o nível de atividade", "Selecione um nível de atividade"),
+});
+
+type FormDataType = z.infer<typeof formSchema>;
 
 interface NutritionData {
   name: string;
@@ -21,15 +40,16 @@ export function NutritionForm() {
   const [isNutritionModalOpen, setIsNutritionModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataType>({
     name: "",
     weight: "",
     height: "",
     age: "",
-    gender: "Masculino",
-    objective: "Emagrecimento",
-    activityLevel: "Sedentário (pouco ou nenhuma atividade física)",
+    gender: "",
+    objective: "",
+    activityLevel: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   function handleChange(
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -39,9 +59,36 @@ export function NutritionForm() {
       ...prevData,
       [name]: value,
     }));
+
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   }
 
-  async function createNutrition() {
+  async function createNutrition(event: React.FormEvent) {
+    event.preventDefault();
+    
+    // Validate the form
+    const validationResult = formSchema.safeParse(formData);
+    
+    if (!validationResult.success) {
+      const formattedErrors: Record<string, string> = {};
+      validationResult.error.errors.forEach(error => {
+        if (error.path[0]) {
+          formattedErrors[error.path[0].toString()] = error.message;
+        }
+      });
+      setErrors(formattedErrors);
+      return;
+    }
+    
+    setErrors({});
+    setIsLoading(true);
+
     setIsLoading(true);
     try {
       const genIA = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_API_KEY!);
@@ -90,80 +137,108 @@ export function NutritionForm() {
     <main className="flex-1 p-6">
       <p className="text-gray-700">Gerencie sua nutrição com facilidade.</p>
 
-      <form className="bg-white p-6 rounded-lg shadow-md mt-6">
+      <form className="bg-white p-6 rounded-lg shadow-md mt-6" onSubmit={createNutrition}>
         <h2 className="text-2xl font-bold mb-4">Criar Dieta</h2>
-        <input
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          type="text"
-          placeholder="Nome"
-          className="w-full p-2 border rounded mb-2"
-        />
-        <input
-          name="weight"
-          value={formData.weight}
-          onChange={handleChange}
-          type="text"
-          placeholder="Peso (kg)"
-          className="w-full p-2 border rounded mb-2"
-        />
-        <input
-          name="height"
-          value={formData.height}
-          onChange={handleChange}
-          type="text"
-          placeholder="Altura (cm)"
-          className="w-full p-2 border rounded mb-2"
-        />
-        <input
-          name="age"
-          value={formData.age}
-          onChange={handleChange}
-          type="text"
-          placeholder="Idade"
-          className="w-full p-2 border rounded mb-2"
-        />
-        <select
-          name="gender"
-          className="w-full p-2 border rounded mb-2"
-          value={formData.gender}
-          onChange={handleChange}
-        >
-          <option>Masculino</option>
-          <option>Feminino</option>
-        </select>
-        <select
-          name="objective"
-          className="w-full p-2 border rounded mb-2"
-          value={formData.objective}
-          onChange={handleChange}
-        >
-          <option>Emagrecimento</option>
-          <option>Hipertrofia</option>
-          <option>Hipertrofia e Definição</option>
-          <option>Definição</option>
-        </select>
-        <select
-          name="activityLevel"
-          className="w-full p-2 border rounded mb-2"
-          value={formData.activityLevel}
-          onChange={handleChange}
-        >
-          <option>Sedentário (pouco ou nenhuma atividade física)</option>
-          <option>Levemente ativo (exercícios 1 a 3 vezes na semana)</option>
-          <option>
-            Moderadamente ativo (exercícios 3 a 5 vezes na semana)
-          </option>
-          <option>Altamente ativo (exercícios 5 a 7 vezes por semana)</option>
-        </select>
+        <div className="mb-3">
+          <input
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            type="text"
+            placeholder="Nome"
+            className={`w-full p-2 border rounded ${errors.name ? 'border-red-500' : ''}`}
+          />
+          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+        </div>
+
+        <div className="mb-3">
+          <input
+            name="weight"
+            value={formData.weight}
+            onChange={handleChange}
+            type="text"
+            placeholder="Peso (kg)"
+            className={`w-full p-2 border rounded ${errors.weight ? 'border-red-500' : ''}`}
+          />
+          {errors.weight && <p className="text-red-500 text-sm mt-1">{errors.weight}</p>}
+        </div>
+
+        <div className="mb-3">
+          <input
+            name="height"
+            value={formData.height}
+            onChange={handleChange}
+            type="text"
+            placeholder="Altura (cm)"
+            className={`w-full p-2 border rounded ${errors.height ? 'border-red-500' : ''}`}
+          />
+          {errors.height && <p className="text-red-500 text-sm mt-1">{errors.height}</p>}
+        </div>
+
+        <div className="mb-3">
+          <input
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            type="text"
+            placeholder="Idade"
+            className={`w-full p-2 border rounded ${errors.age ? 'border-red-500' : ''}`}
+          />
+          {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
+        </div>
+
+        <div className="mb-3">
+          <select
+            name="gender"
+            className={`w-full p-2 border rounded ${errors.gender ? 'border-red-500' : ''}`}
+            value={formData.gender}
+            onChange={handleChange}
+          >
+            <option value="">Selecione o sexo</option>
+            <option>Masculino</option>
+            <option>Feminino</option>
+          </select>
+          {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
+        </div>
+
+        <div className="mb-3">
+          <select
+            name="objective"
+            className={`w-full p-2 border rounded ${errors.objective ? 'border-red-500' : ''}`}
+            value={formData.objective}
+            onChange={handleChange}
+          >
+            <option value="">Selecione o objetivo</option>
+            <option>Emagrecimento</option>
+            <option>Hipertrofia</option>
+            <option>Hipertrofia e Definição</option>
+            <option>Definição</option>
+          </select>
+          {errors.objective && <p className="text-red-500 text-sm mt-1">{errors.objective}</p>}
+        </div>
+
+        <div className="mb-3">
+          <select
+            name="activityLevel"
+            className={`w-full p-2 border rounded ${errors.activityLevel ? 'border-red-500' : ''}`}
+            value={formData.activityLevel}
+            onChange={handleChange}
+          >
+            <option value="">Selecione o nível de atividade</option>
+            <option>Sedentário (pouco ou nenhuma atividade física)</option>
+            <option>Levemente ativo (exercícios 1 a 3 vezes na semana)</option>
+            <option>
+              Moderadamente ativo (exercícios 3 a 5 vezes na semana)
+            </option>
+            <option>Altamente ativo (exercícios 5 a 7 vezes por semana)</option>
+          </select>
+          {errors.activityLevel && <p className="text-red-500 text-sm mt-1">{errors.activityLevel}</p>}
+        </div>
+
         <button
+          type="submit"
           className="mt-4 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded cursor-pointer justify-center align-middle items-center justify-items-center"
           style={{ minWidth: "140px", height: "40px" }}
-          onClick={(event) => {
-            event.preventDefault();
-            createNutrition();
-          }}
           disabled={isLoading}
         >
           {isLoading ? (
