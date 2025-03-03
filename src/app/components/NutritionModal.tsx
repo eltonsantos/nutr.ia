@@ -7,6 +7,7 @@ interface NutritionData {
   height: string;
   weight: string;
   age: string;
+  gender: string;
   objective: string;
   activityLevel: string;
   meals: { name: string; time: string; foods: string[] }[];
@@ -31,7 +32,7 @@ export function NutritionModal({ isOpen, onRequestClose, data }: NutritionModalP
       .map((meal) => `🍽️ ${meal.name} (${meal.time})\n Alimentos: ${meal.foods.join(", ")}`)
       .join("\n\n");
 
-    const supplementsInfo = data?.supplements.length > 0 
+    const supplementsInfo = data?.supplements && data.supplements.length > 0 
       ? `💊 Suplementos: ${data?.supplements.join(", ")}` 
       : "";
 
@@ -65,6 +66,7 @@ export function NutritionModal({ isOpen, onRequestClose, data }: NutritionModalP
       <p className="text-gray-700"><strong>Altura:</strong> {data.height} cm</p>
       <p className="text-gray-700"><strong>Peso:</strong> {data.weight} kg</p>
       <p className="text-gray-700"><strong>Idade:</strong> {data.age} anos</p>
+      <p className="text-gray-700"><strong>Sexo:</strong> {data.gender}</p>
       <p className="text-gray-700"><strong>Foco:</strong> {data.objective}</p>
       <p className="text-gray-700"><strong>Nível de atividade:</strong> {data.activityLevel}</p>
 
@@ -73,7 +75,7 @@ export function NutritionModal({ isOpen, onRequestClose, data }: NutritionModalP
         {data.meals.map((meal, index) => (
           <div key={index} className="p-3 border rounded-lg bg-gray-100">
             <h4 className="font-semibold">{meal.name} - ⏰ {meal.time}</h4>
-            <p className="text-sm text-gray-600">Alimentos: {meal.foods.join(", ")}</p>
+            <p className="text-sm text-gray-600">{meal.foods.join(", ")}</p>
           </div>
         ))}
       </div>
