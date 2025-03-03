@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "image.tmdb.org"
+        hostname: "lh3.googleusercontent.com"
       },
       {
         protocol: "https",
