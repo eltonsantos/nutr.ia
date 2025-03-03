@@ -2,10 +2,10 @@
 
 import { signIn } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 
-export default function LoginForm() {
+function LoginFormContent() {
   const searchParams = useSearchParams()
-
   const error = searchParams.get("error")
 
   async function login(e: React.FormEvent<HTMLFormElement>) {
@@ -35,5 +35,13 @@ export default function LoginForm() {
         <div className="text-red-500">Erro no login</div>
       )}
     </form>
+  )
+}
+
+export default function LoginForm() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <LoginFormContent />
+    </Suspense>
   )
 }

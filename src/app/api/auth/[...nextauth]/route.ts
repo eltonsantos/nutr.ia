@@ -18,11 +18,14 @@ const handler = NextAuth({
           return null
         }
 
-        if(credentials.email === "elton@elton.com" && credentials.password === "123") {
+        const email = process.env.NEXT_PUBLIC_EMAIL_KEY;
+        const password = process.env.NEXT_PUBLIC_PASSWORD_KEY;
+
+        if(credentials.email === email && credentials.password === password) {
           return {
             id: "1",
             name: "Elton",
-            email: "elton@elton.com"
+            email: email
           }
         }
 
