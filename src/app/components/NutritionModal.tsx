@@ -88,9 +88,6 @@ export function NutritionModal({ isOpen, onRequestClose, data }: NutritionModalP
       )}
 
       <div className="mt-6 flex justify-between">
-        <button onClick={onRequestClose} className="px-6 py-2 bg-red-500 text-white rounded">
-          Fechar
-        </button>
         <button onClick={handleShare} className="px-6 py-2 bg-blue-500 text-white rounded">
           Compartilhar
         </button>
