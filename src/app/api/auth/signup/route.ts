@@ -37,11 +37,13 @@ export async function POST(req: NextRequest) {
       success: true, 
       user: { id: user.uid, name, email }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Signup error:", error);
     
-    if (error.code === 'auth/email-already-in-use') {
-      return NextResponse.json({ error: "Email já cadastrado" }, { status: 400 });
+    if (error instanceof Error) {
+      if ("code" in error && error.code === 'auth/email-already-in-use') {
+        return NextResponse.json({ error: "Email já cadastrado" }, { status: 400 });
+      }
     }
     
     return NextResponse.json({ error: "Erro ao cadastrar usuário" }, { status: 500 });
