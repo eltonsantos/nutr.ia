@@ -237,12 +237,12 @@ export function NutritionForm() {
 
         <button
           type="submit"
-          className="mt-4 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded cursor-pointer justify-center align-middle items-center justify-items-center"
+          className="mt-4 px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded cursor-pointer justify-center align-middle items-center justify-items-center disabled:bg-green-700"
           style={{ minWidth: "140px", height: "40px" }}
           disabled={isLoading}
         >
           {isLoading ? (
-            <AiOutlineLoading3Quarters className="animate-spin text-white text-xl" />
+            <AiOutlineLoading3Quarters className="animate-spin text-white text-xl justify-center align-middle items-center justify-items-center" />
           ) : (
             "Gerar Dieta"
           )}

@@ -1,6 +1,8 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { toast } from "react-toastify"
 
 export default function SignupForm() {
@@ -8,6 +10,7 @@ export default function SignupForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
   
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
@@ -29,10 +32,8 @@ export default function SignupForm() {
         return
       }
       
+      router.push("/")
       toast.success("Cadastro realizado com sucesso! Faça login.")
-      setName("")
-      setEmail("")
-      setPassword("")
       
     } catch (error) {
       toast.error("Erro ao cadastrar usuário")
@@ -70,11 +71,16 @@ export default function SignupForm() {
         required 
       />
       <button 
-        type="submit" 
+        type="submit"
         disabled={loading}
-        className="font-bold bg-green-600 hover:bg-green-700 rounded-md p-2 w-full text-white cursor-pointer disabled:bg-green-400"
+        style={{ height: "40px" }}
+        className="font-bold bg-green-600 hover:bg-green-700 rounded-md px-6 py-2 w-full text-white cursor-pointer justify-center align-middle items-center justify-items-center disabled:bg-green-700"
       >
-        {loading ? "Cadastrando..." : "Cadastrar"}
+        {loading ? (
+          <AiOutlineLoading3Quarters className="animate-spin text-white text-xl justify-center align-middle items-center justify-items-center" />
+        ) : (
+          "Cadastrar"
+        )}
       </button>
     </form>
   )

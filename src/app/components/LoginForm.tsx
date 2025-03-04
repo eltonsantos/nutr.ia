@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Suspense, useState } from "react"
+import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { toast } from "react-toastify"
 
 function LoginFormContent() {
@@ -32,8 +33,8 @@ function LoginFormContent() {
       if (result?.error) {
         toast.error("Credenciais inválidas")
       } else {
-        toast.success("Login realizado com sucesso!")
         router.push("/dashboard")
+        toast.success("Login realizado com sucesso!")
       }
     } catch (error) {
       console.error(error)
@@ -50,9 +51,14 @@ function LoginFormContent() {
         <input type="password" name="password" placeholder="Digite seu password" className="rounded-md p-2 w-full bg-white" />
         <button
           type="submit"
-          className="font-bold bg-green-600 hover:bg-green-700 rounded-md p-2 w-full text-white cursor-pointer"
+          style={{ height: "40px" }}
+          className="font-bold bg-green-600 hover:bg-green-700 rounded-md px-6 py-2 w-full text-white cursor-pointer justify-center align-middle items-center justify-items-center disabled:bg-green-700"
         >
-          {loading ? "Entrando..." : "Login"}
+          {loading ? (
+            <AiOutlineLoading3Quarters className="animate-spin text-white text-xl justify-center align-middle items-center justify-items-center" />
+          ) : (
+            "Login"
+          )}
         </button>
 
         {error === "CredentialsSignin" && (
