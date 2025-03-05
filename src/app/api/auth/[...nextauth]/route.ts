@@ -1,6 +1,8 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/app/lib/firebase";
 
 const handler = NextAuth({
   pages: {
@@ -18,25 +20,45 @@ const handler = NextAuth({
           return null
         }
 
-        const email = process.env.NEXT_PUBLIC_EMAIL_KEY;
-        const password = process.env.NEXT_PUBLIC_PASSWORD_KEY;
+        try {
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
+            credentials.email,
+            credentials.password
+          )
 
-        if(credentials.email === email && credentials.password === password) {
+          const user = userCredential.user;
+
           return {
-            id: "1",
-            name: "Elton",
-            email: email
+            id: user.uid,
+            name: user.displayName || user.email?.split('@')[0] || 'User',
+            email: user.email
           }
+        } catch (error) {
+          console.error(error)
+          return null
         }
-
-        return null
       },
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!
     })
-  ]
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.email = token.id as string;
+      }
+      return session;
+    }
+  }
 })
 
 export { handler as GET, handler as POST }

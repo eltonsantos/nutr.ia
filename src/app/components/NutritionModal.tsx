@@ -27,24 +27,6 @@ export function NutritionModal({ isOpen, onRequestClose, data }: NutritionModalP
 
   if (!data) return null;
 
-  async function handleShare() {
-    const mealInfo = data?.meals
-      .map((meal) => `🍽️ ${meal.name} (${meal.time})\n Alimentos: ${meal.foods.join(", ")}`)
-      .join("\n\n");
-
-    const supplementsInfo = data?.supplements && data.supplements.length > 0 
-      ? `💊 Suplementos: ${data?.supplements.join(", ")}` 
-      : "";
-
-    const message = `📋 *Minha Dieta*\n\n👤 Nome: ${data?.name}\n🎯 Objetivo: ${data?.objective}\n🔥 Atividade: ${data?.activityLevel}\n\n${mealInfo}\n\n${supplementsInfo}`;
-
-    if (navigator.share) {
-      await navigator.share({ text: message });
-    } else {
-      alert("Compartilhamento não suportado neste dispositivo.");
-    }
-  }
-
   return (
     <Modal
       isOpen={isOpen}
@@ -86,13 +68,6 @@ export function NutritionModal({ isOpen, onRequestClose, data }: NutritionModalP
           <p className="text-gray-700">{data.supplements.join(", ")}</p>
         </>
       )}
-
-      <div className="mt-6 flex justify-between">
-        <button onClick={handleShare} className="px-6 py-2 bg-blue-500 text-white rounded">
-          Compartilhar
-        </button>
-      </div>
-
     </Modal>
   )
 }
