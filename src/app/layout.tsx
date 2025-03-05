@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "NUTR.IA",
-  description: "Application that generates, through AI, a nutritious diet according to your data, objectives and activity level.",
+  description: "Application that generates, through AI, a nutritious diet according to your data, objectives and activity level. By Elton Santos",
 };
 
 export default function RootLayout({
