@@ -5,6 +5,7 @@ import { NutritionModal } from "./NutritionModal";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { z } from "zod";
+import { FiUser, FiActivity, FiTarget, FiCalendar, FiSliders, FiHash } from "react-icons/fi";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -89,7 +90,6 @@ export function NutritionForm() {
     setErrors({});
     setIsLoading(true);
 
-    setIsLoading(true);
     try {
       const genIA = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_API_KEY!);
       const model = genIA.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -134,119 +134,164 @@ export function NutritionForm() {
   }
 
   return (
-    <main className="flex-1 p-6">
-      <p className="text-gray-700">Gerencie sua nutrição com facilidade.</p>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="p-6 border-b border-gray-100">
+        <h2 className="text-xl font-semibold text-gray-800">Informações Pessoais</h2>
+        <p className="text-gray-500 text-sm mt-1">Preencha seus dados para gerar um plano personalizado</p>
+      </div>
 
-      <form className="bg-white p-6 rounded-lg shadow-md mt-6" onSubmit={createNutrition}>
-        <h2 className="text-2xl font-bold mb-4">Criar Dieta</h2>
-        <div className="mb-3">
-          <input
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            type="text"
-            placeholder="Nome"
-            className={`w-full p-2 border rounded ${errors.name ? 'border-red-500' : ''}`}
-          />
-          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+      <form className="p-6" onSubmit={createNutrition}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Nome completo</label>
+            <div className="input-icon-container">
+              <div className="input-icon">
+                <FiUser className="w-5 h-5" />
+              </div>
+              <input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                type="text"
+                placeholder="Seu nome"
+                className={`with-icon w-full ${errors.name ? 'border-red-500' : ''}`}
+              />
+            </div>
+            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Idade</label>
+            <div className="input-icon-container">
+              <div className="input-icon">
+                <FiCalendar className="w-5 h-5" />
+              </div>
+              <input
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                type="text"
+                placeholder="Sua idade"
+                className={`with-icon w-full ${errors.age ? 'border-red-500' : ''}`}
+              />
+            </div>
+            {errors.age && <p className="text-red-500 text-sm">{errors.age}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Peso (kg)</label>
+            <div className="input-icon-container">
+              <div className="input-icon">
+                <FiHash className="w-5 h-5" />
+              </div>
+              <input
+                name="weight"
+                value={formData.weight}
+                onChange={handleChange}
+                type="text"
+                placeholder="Ex: 70.5"
+                className={`with-icon w-full ${errors.weight ? 'border-red-500' : ''}`}
+              />
+            </div>
+            {errors.weight && <p className="text-red-500 text-sm">{errors.weight}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Altura (cm)</label>
+            <div className="input-icon-container">
+              <div className="input-icon">
+                <FiHash className="w-5 h-5" />
+              </div>
+              <input
+                name="height"
+                value={formData.height}
+                onChange={handleChange}
+                type="text"
+                placeholder="Ex: 175"
+                className={`with-icon w-full ${errors.height ? 'border-red-500' : ''}`}
+              />
+            </div>
+            {errors.height && <p className="text-red-500 text-sm">{errors.height}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Sexo</label>
+            <div className="input-icon-container">
+              <div className="input-icon">
+                <FiUser className="w-5 h-5" />
+              </div>
+              <select
+                name="gender"
+                className={`with-icon w-full appearance-none bg-white ${errors.gender ? 'border-red-500' : ''}`}
+                value={formData.gender}
+                onChange={handleChange}
+              >
+                <option value="">Selecione o sexo</option>
+                <option>Masculino</option>
+                <option>Feminino</option>
+              </select>
+            </div>
+            {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Objetivo</label>
+            <div className="input-icon-container">
+              <div className="input-icon">
+                <FiTarget className="w-5 h-5" />
+              </div>
+              <select
+                name="objective"
+                className={`with-icon w-full appearance-none bg-white ${errors.objective ? 'border-red-500' : ''}`}
+                value={formData.objective}
+                onChange={handleChange}
+              >
+                <option value="">Selecione o objetivo</option>
+                <option>Emagrecimento</option>
+                <option>Hipertrofia</option>
+                <option>Hipertrofia e Definição</option>
+                <option>Definição</option>
+              </select>
+            </div>
+            {errors.objective && <p className="text-red-500 text-sm">{errors.objective}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Nível de Atividade</label>
+            <div className="input-icon-container">
+              <div className="input-icon">
+                <FiActivity className="w-5 h-5" />
+              </div>
+              <select
+                name="activityLevel"
+                className={`with-icon w-full appearance-none bg-white ${errors.activityLevel ? 'border-red-500' : ''}`}
+                value={formData.activityLevel}
+                onChange={handleChange}
+              >
+                <option value="">Selecione o nível de atividade</option>
+                <option>Sedentário (pouco ou nenhuma atividade física)</option>
+                <option>Levemente ativo (exercícios 1 a 3 vezes na semana)</option>
+                <option>Moderadamente ativo (exercícios 3 a 5 vezes na semana)</option>
+                <option>Altamente ativo (exercícios 5 a 7 vezes por semana)</option>
+              </select>
+            </div>
+            {errors.activityLevel && <p className="text-red-500 text-sm">{errors.activityLevel}</p>}
+          </div>
         </div>
 
-        <div className="mb-3">
-          <input
-            name="weight"
-            value={formData.weight}
-            onChange={handleChange}
-            type="text"
-            placeholder="Peso (kg)"
-            className={`w-full p-2 border rounded ${errors.weight ? 'border-red-500' : ''}`}
-          />
-          {errors.weight && <p className="text-red-500 text-sm mt-1">{errors.weight}</p>}
-        </div>
-
-        <div className="mb-3">
-          <input
-            name="height"
-            value={formData.height}
-            onChange={handleChange}
-            type="text"
-            placeholder="Altura (cm)"
-            className={`w-full p-2 border rounded ${errors.height ? 'border-red-500' : ''}`}
-          />
-          {errors.height && <p className="text-red-500 text-sm mt-1">{errors.height}</p>}
-        </div>
-
-        <div className="mb-3">
-          <input
-            name="age"
-            value={formData.age}
-            onChange={handleChange}
-            type="text"
-            placeholder="Idade"
-            className={`w-full p-2 border rounded ${errors.age ? 'border-red-500' : ''}`}
-          />
-          {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
-        </div>
-
-        <div className="mb-3">
-          <select
-            name="gender"
-            className={`w-full p-2 border rounded ${errors.gender ? 'border-red-500' : ''}`}
-            value={formData.gender}
-            onChange={handleChange}
+        <div className="mt-8 flex justify-end">
+          <button
+            type="submit"
+            className="btn btn-primary h-12 px-8"
+            disabled={isLoading}
           >
-            <option value="">Selecione o sexo</option>
-            <option>Masculino</option>
-            <option>Feminino</option>
-          </select>
-          {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
+            {isLoading ? (
+              <AiOutlineLoading3Quarters className="animate-spin text-white text-xl" />
+            ) : (
+              "Gerar Plano Nutricional"
+            )}
+          </button>
         </div>
-
-        <div className="mb-3">
-          <select
-            name="objective"
-            className={`w-full p-2 border rounded ${errors.objective ? 'border-red-500' : ''}`}
-            value={formData.objective}
-            onChange={handleChange}
-          >
-            <option value="">Selecione o objetivo</option>
-            <option>Emagrecimento</option>
-            <option>Hipertrofia</option>
-            <option>Hipertrofia e Definição</option>
-            <option>Definição</option>
-          </select>
-          {errors.objective && <p className="text-red-500 text-sm mt-1">{errors.objective}</p>}
-        </div>
-
-        <div className="mb-3">
-          <select
-            name="activityLevel"
-            className={`w-full p-2 border rounded ${errors.activityLevel ? 'border-red-500' : ''}`}
-            value={formData.activityLevel}
-            onChange={handleChange}
-          >
-            <option value="">Selecione o nível de atividade</option>
-            <option>Sedentário (pouco ou nenhuma atividade física)</option>
-            <option>Levemente ativo (exercícios 1 a 3 vezes na semana)</option>
-            <option>
-              Moderadamente ativo (exercícios 3 a 5 vezes na semana)
-            </option>
-            <option>Altamente ativo (exercícios 5 a 7 vezes por semana)</option>
-          </select>
-          {errors.activityLevel && <p className="text-red-500 text-sm mt-1">{errors.activityLevel}</p>}
-        </div>
-
-        <button
-          type="submit"
-          className="mt-4 px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded cursor-pointer justify-center align-middle items-center justify-items-center disabled:bg-green-700"
-          style={{ minWidth: "140px", height: "40px" }}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <AiOutlineLoading3Quarters className="animate-spin text-white text-xl justify-center align-middle items-center justify-items-center" />
-          ) : (
-            "Gerar Dieta"
-          )}
-        </button>
       </form>
 
       <NutritionModal
@@ -254,6 +299,6 @@ export function NutritionForm() {
         onRequestClose={() => setIsNutritionModalOpen(false)}
         data={nutritionData}
       />
-    </main>
+    </div>
   );
 }

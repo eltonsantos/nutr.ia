@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { Suspense, useState } from "react"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { toast } from "react-toastify"
+import { FiMail, FiLock } from "react-icons/fi"
 
 function LoginFormContent() {
   const searchParams = useSearchParams()
@@ -44,40 +45,67 @@ function LoginFormContent() {
   }
 
   return (
-    <>
-      <form onSubmit={login} className="flex flex-col gap-2 w-full justify-center items-center">
-        <h2 className="font-bold text-lg mb-3 text-slate-600">Faça seu login</h2>
-        <input type="email" name="email" placeholder="Digite seu email" className="rounded-md p-2 w-full bg-white" />
-        <input type="password" name="password" placeholder="Digite seu password" className="rounded-md p-2 w-full bg-white" />
-        <button
-          type="submit"
-          style={{ height: "40px" }}
-          className="font-bold bg-green-600 hover:bg-green-700 rounded-md px-6 py-2 w-full text-white cursor-pointer justify-center align-middle items-center justify-items-center disabled:bg-green-700"
-        >
-          {loading ? (
-            <AiOutlineLoading3Quarters className="animate-spin text-white text-xl justify-center align-middle items-center justify-items-center" />
-          ) : (
-            "Login"
-          )}
-        </button>
+    <form onSubmit={login} className="space-y-4">
+      <div className="space-y-2">
+        <div className="input-icon-container">
+          <div className="input-icon">
+            <FiMail className="w-5 h-5" />
+          </div>
+          <input 
+            type="email" 
+            name="email" 
+            placeholder="Digite seu email" 
+            className="with-icon w-full" 
+            required
+          />
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <div className="input-icon-container">
+          <div className="input-icon">
+            <FiLock className="w-5 h-5" />
+          </div>
+          <input 
+            type="password" 
+            name="password" 
+            placeholder="Digite sua senha" 
+            className="with-icon w-full" 
+            required
+          />
+        </div>
+      </div>
 
-        {error === "CredentialsSignin" && (
-          <div className="text-red-500">Erro no login</div>
-        )}
-      </form>
-      <p className="mt-4 text-sm">
-        Não tem uma conta?{" "}
-        <Link href="/signup" className="text-green-700 hover:underline font-semibold">
-          Cadastre-se
+      <div className="flex justify-end">
+        <Link href="#" className="text-sm text-green-600 hover:underline">
+          Esqueceu a senha?
         </Link>
-      </p>
-    </>
+      </div>
+      
+      <button
+        type="submit"
+        className="btn btn-primary w-full flex items-center justify-center h-12"
+        disabled={loading}
+      >
+        {loading ? (
+          <AiOutlineLoading3Quarters className="animate-spin text-white text-xl" />
+        ) : (
+          "Entrar"
+        )}
+      </button>
+
+      {error === "CredentialsSignin" && (
+        <div className="text-red-500 text-sm text-center mt-2">
+          Email ou senha incorretos
+        </div>
+      )}
+    </form>
   )
 }
 
 export default function LoginForm() {
   return (
-    <Suspense fallback={<div>Carregando...</div>}>
+    <Suspense fallback={<div className="animate-pulse bg-gray-200 h-40 w-full rounded-lg"></div>}>
       <LoginFormContent />
     </Suspense>
   )

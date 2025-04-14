@@ -1,6 +1,7 @@
 import Modal from "react-modal";
 import { useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
+import { FiClock, FiUsers, FiTarget, FiActivity } from "react-icons/fi";
 
 interface NutritionData {
   name: string;
@@ -39,35 +40,107 @@ export function NutritionModal({ isOpen, onRequestClose, data }: NutritionModalP
         onClick={onRequestClose}
         className="react-modal-close"
       >
-        <IoIosClose size={32} className="cursor-pointer" />
+        <IoIosClose size={32} />
       </button>
 
-      <h2 className="text-2xl font-bold mb-4 text-green-600">Sua Dieta Gerada</h2>
-      
-      <p className="text-gray-700"><strong>Nome:</strong> {data.name}</p>
-      <p className="text-gray-700"><strong>Altura:</strong> {data.height} cm</p>
-      <p className="text-gray-700"><strong>Peso:</strong> {data.weight} kg</p>
-      <p className="text-gray-700"><strong>Idade:</strong> {data.age} anos</p>
-      <p className="text-gray-700"><strong>Sexo:</strong> {data.gender}</p>
-      <p className="text-gray-700"><strong>Foco:</strong> {data.objective}</p>
-      <p className="text-gray-700"><strong>Nível de atividade:</strong> {data.activityLevel}</p>
-
-      <h3 className="text-xl font-semibold mt-4">🍽️ Refeições</h3>
-      <div className="mt-2 space-y-3">
-        {data.meals.map((meal, index) => (
-          <div key={index} className="p-3 border rounded-lg bg-gray-100">
-            <h4 className="font-semibold">{meal.name} - ⏰ {meal.time}</h4>
-            <p className="text-sm text-gray-600">{meal.foods.join(", ")}</p>
+      <div className="space-y-6">
+        <div className="text-center pb-4 border-b border-gray-100">
+          <h2 className="text-2xl font-bold text-green-600">Plano Nutricional</h2>
+          <p className="text-gray-600 mt-1">
+            Plano personalizado para {data.name}
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <FiUsers className="w-5 h-5 mx-auto text-green-600 mb-1" />
+            <p className="text-xs uppercase font-medium text-gray-500">Sexo</p>
+            <p className="font-medium">{data.gender}</p>
           </div>
-        ))}
-      </div>
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <p className="text-lg font-bold text-green-600">{data.age}</p>
+            <p className="text-xs uppercase font-medium text-gray-500">Idade</p>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <p className="text-lg font-bold text-green-600">{data.height} cm</p>
+            <p className="text-xs uppercase font-medium text-gray-500">Altura</p>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <p className="text-lg font-bold text-green-600">{data.weight} kg</p>
+            <p className="text-xs uppercase font-medium text-gray-500">Peso</p>
+          </div>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="bg-green-50 p-4 rounded-lg flex items-center gap-3 flex-1">
+            <FiTarget className="w-5 h-5 text-green-600 flex-shrink-0" />
+            <div>
+              <p className="text-xs uppercase font-medium text-gray-500">Objetivo</p>
+              <p className="font-medium">{data.objective}</p>
+            </div>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg flex items-center gap-3 flex-1">
+            <FiActivity className="w-5 h-5 text-green-600 flex-shrink-0" />
+            <div>
+              <p className="text-xs uppercase font-medium text-gray-500">Nível de Atividade</p>
+              <p className="font-medium">{data.activityLevel}</p>
+            </div>
+          </div>
+        </div>
 
-      {data.supplements.length > 0 && (
-        <>
-          <h3 className="text-xl font-semibold mt-4">💊 Dicas de Suplementos</h3>
-          <p className="text-gray-700">{data.supplements.join(", ")}</p>
-        </>
-      )}
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <span className="text-green-600">🍽️</span> Refeições
+          </h3>
+          <div className="space-y-4">
+            {data.meals.map((meal, index) => (
+              <div key={index} className="p-4 border border-gray-100 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-bold text-gray-800">{meal.name}</h4>
+                  <div className="flex items-center gap-1 text-gray-600 text-sm">
+                    <FiClock className="w-4 h-4" />
+                    <span>{meal.time}</span>
+                  </div>
+                </div>
+                <ul className="text-gray-600 space-y-1">
+                  {meal.foods.map((food, foodIndex) => (
+                    <li key={foodIndex} className="pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-green-500">
+                      {food}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {data.supplements.length > 0 && (
+          <div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <span className="text-green-600">💊</span> Suplementos Recomendados
+            </h3>
+            <div className="bg-green-50 p-4 rounded-lg">
+              <ul className="space-y-2">
+                {data.supplements.map((supplement, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-green-500 font-bold">•</span>
+                    <span>{supplement}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+        
+        <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
+          <button 
+            onClick={onRequestClose}
+            className="btn btn-primary"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
     </Modal>
   )
 }

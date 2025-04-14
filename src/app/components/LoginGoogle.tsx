@@ -1,12 +1,16 @@
 "use client"
 
+import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 
 export default function LoginGoogle() {
   return (
-    <>
-      <h5 className="font-semibold text-slate-600">OU</h5>
-      <button onClick={() => signIn('google', { callbackUrl: '/dashboard' })} className="font-bold bg-blue-500 hover:bg-blue-600 rounded-md p-2 w-full text-white cursor-pointer">Login com Google</button>
-    </>
-  )
+    <button
+      onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+      className="w-full flex items-center justify-center gap-2 rounded-md bg-white border border-gray-300 py-3 px-4 text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+    >
+      <FcGoogle className="w-5 h-5" />
+      <span className="font-medium">Continuar com Google</span>
+    </button>
+  );
 }
