@@ -46,7 +46,7 @@ export function MenuAside() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="flex items-center gap-3 text-gray-700 hover:bg-green-50 hover:text-green-600 p-3 rounded-md transition-colors group">
+                <Link href="/dashboard/history" className="flex items-center gap-3 text-gray-700 hover:bg-green-50 hover:text-green-600 p-3 rounded-md transition-colors group">
                   <FiCalendar className="text-gray-500 group-hover:text-green-600" size={18} />
                   <span>Histórico</span>
                 </Link>

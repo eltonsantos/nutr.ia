@@ -1,7 +1,10 @@
+"use client";
+
 import Modal from "react-modal";
 import { useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
-import { FiClock, FiUsers, FiTarget, FiActivity } from "react-icons/fi";
+import { FiClock, FiUsers, FiTarget, FiActivity, FiDownload } from "react-icons/fi";
+import { jsPDF } from "jspdf";
 
 interface NutritionData {
   name: string;
@@ -27,6 +30,106 @@ export function NutritionModal({ isOpen, onRequestClose, data }: NutritionModalP
   }, []);
 
   if (!data) return null;
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    const margin = 20;
+    let y = margin;
+    
+    // Title
+    doc.setFontSize(20);
+    doc.setTextColor(0, 128, 0);
+    doc.text("Plano Nutricional", doc.internal.pageSize.width / 2, y, { align: "center" });
+    y += 10;
+    
+    // Subtitle
+    doc.setFontSize(12);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Plano personalizado para ${data.name}`, doc.internal.pageSize.width / 2, y, { align: "center" });
+    y += 15;
+    
+    // User info
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Nome: ${data.name}`, margin, y);
+    y += 7;
+    doc.text(`Sexo: ${data.gender}`, margin, y);
+    y += 7;
+    doc.text(`Idade: ${data.age} anos`, margin, y);
+    y += 7;
+    doc.text(`Altura: ${data.height} cm`, margin, y);
+    y += 7;
+    doc.text(`Peso: ${data.weight} kg`, margin, y);
+    y += 7;
+    doc.text(`Objetivo: ${data.objective}`, margin, y);
+    y += 7;
+    doc.text(`Nível de Atividade: ${data.activityLevel}`, margin, y);
+    y += 15;
+    
+    // Meals
+    doc.setFontSize(14);
+    doc.setTextColor(0, 128, 0);
+    doc.text("Refeições", margin, y);
+    y += 10;
+    
+    // Each meal
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    
+    data.meals.forEach((meal) => {
+      if (y > doc.internal.pageSize.height - 30) {
+        doc.addPage();
+        y = margin;
+      }
+      
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`${meal.name} - ${meal.time}`, margin, y);
+      y += 7;
+      
+      doc.setFontSize(10);
+      doc.setTextColor(70, 70, 70);
+      
+      meal.foods.forEach((food) => {
+        if (y > doc.internal.pageSize.height - 20) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(`• ${food}`, margin + 5, y);
+        y += 6;
+      });
+      
+      y += 5;
+    });
+    
+    // Supplements if available
+    if (data.supplements && data.supplements.length > 0) {
+      if (y > doc.internal.pageSize.height - 30) {
+        doc.addPage();
+        y = margin;
+      }
+      
+      doc.setFontSize(14);
+      doc.setTextColor(0, 128, 0);
+      doc.text("Suplementos Recomendados", margin, y);
+      y += 10;
+      
+      doc.setFontSize(10);
+      doc.setTextColor(70, 70, 70);
+      
+      data.supplements.forEach((supplement) => {
+        if (y > doc.internal.pageSize.height - 20) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(`• ${supplement}`, margin + 5, y);
+        y += 6;
+      });
+    }
+    
+    // Save
+    doc.save(`Plano_Nutricional_${data.name.replace(/\s/g, '_')}.pdf`);
+  };
 
   return (
     <Modal
@@ -132,7 +235,14 @@ export function NutritionModal({ isOpen, onRequestClose, data }: NutritionModalP
           </div>
         )}
         
-        <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
+        <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-3">
+          <button 
+            onClick={generatePDF}
+            className="btn btn-outline flex items-center gap-2"
+          >
+            <FiDownload size={18} />
+            <span>Baixar PDF</span>
+          </button>
           <button 
             onClick={onRequestClose}
             className="btn btn-primary"

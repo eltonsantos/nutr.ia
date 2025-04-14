@@ -5,7 +5,10 @@ import { NutritionModal } from "./NutritionModal";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { z } from "zod";
-import { FiUser, FiActivity, FiTarget, FiCalendar, FiSliders, FiHash } from "react-icons/fi";
+import { FiUser, FiActivity, FiTarget, FiCalendar, FiHash } from "react-icons/fi";
+import { useSession } from "next-auth/react";
+import { saveNutritionToHistory } from "../lib/nutritionService";
+import { toast } from "react-toastify";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -38,6 +41,7 @@ interface NutritionData {
 }
 
 export function NutritionForm() {
+  const { data: session } = useSession();
   const [isNutritionModalOpen, setIsNutritionModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
@@ -87,6 +91,11 @@ export function NutritionForm() {
       return;
     }
     
+    if (!session?.user?.email) {
+      toast.error("Você precisa estar logado para gerar uma dieta");
+      return;
+    }
+    
     setErrors({});
     setIsLoading(true);
 
@@ -122,12 +131,17 @@ export function NutritionForm() {
         };
       
         console.log("Dieta formatada: ", formattedData);
+        
+        // Salvar no Firebase
+        await saveNutritionToHistory(formattedData, session.user.email);
+        toast.success("Dieta gerada e salva com sucesso!");
 
         setNutritionData(formattedData);
         setIsNutritionModalOpen(true);
       }
     } catch (error) {
       console.error(error);
+      toast.error("Erro ao gerar dieta. Tente novamente.");
     } finally {
       setIsLoading(false);
     }

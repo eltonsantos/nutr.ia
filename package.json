@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.22.0",
+    "date-fns": "^4.1.0",
     "firebase": "^11.4.0",
+    "jspdf": "^3.0.1",
     "next": "15.2.0",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
