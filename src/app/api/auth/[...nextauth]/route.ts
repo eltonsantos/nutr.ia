@@ -4,6 +4,18 @@ import GoogleProvider from "next-auth/providers/google"
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/lib/firebase";
 
+// Extend the built-in session types
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    }
+  }
+}
+
 const handler = NextAuth({
   pages: {
     signIn: "/"
@@ -34,8 +46,10 @@ const handler = NextAuth({
             name: user.displayName || user.email?.split('@')[0] || 'User',
             email: user.email
           }
-        } catch (error) {
-          console.error(error)
+        } catch (error: any) {
+          console.error('Firebase Auth Error:', error);
+          console.error('Error code:', error?.code);
+          console.error('Error message:', error?.message);
           return null
         }
       },
@@ -48,13 +62,15 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.uid = user.id; // Firebase UID
+        token.email = user.email;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.email = token.id as string;
+        session.user.id = token.uid as string; // Firebase UID
+        session.user.email = token.email as string;
       }
       return session;
     }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { NutritionHistory, deleteNutritionHistory, getAllNutritionHistory } from "../../lib/nutritionService";
+import { NutritionHistory, deleteNutritionHistory, getNutritionHistory } from "../../lib/nutritionService";
 import { redirect } from "next/navigation";
 import { FiTrash2, FiEye, FiClock, FiDownload } from "react-icons/fi";
 import { NutritionModal } from "../../components/NutritionModal";
@@ -20,24 +20,12 @@ export default function HistoryPage() {
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
 
   const fetchHistory = useCallback(async () => {
-    if (!session?.user?.email) return;
+    if (!session?.user?.id) return;
     
     setIsLoading(true);
     try {
-      console.log("Fetching history for user:", session.user.email);
-      
-      // Get all nutrition history
-      const allHistory = await getAllNutritionHistory();
-      console.log("All history data:", allHistory);
-      
-      // Filter the history client-side instead of using Firestore query
-      // This is a temporary solution until the Firestore index is created
-      const userEmail = session.user?.email || '';
-      const filteredHistory = allHistory.filter(item => item.userId === userEmail);
-      console.log("Filtered history data:", filteredHistory);
-      
-      // Set the nutrition history
-      setNutritionHistory(filteredHistory.length > 0 ? filteredHistory : allHistory);
+      const userHistory = await getNutritionHistory(session.user.id);
+      setNutritionHistory(userHistory);
     } catch (error) {
       console.error("Erro ao carregar histórico:", error);
       toast.error("Erro ao carregar histórico. Tente novamente mais tarde.");
@@ -51,17 +39,17 @@ export default function HistoryPage() {
       redirect("/");
     }
 
-    if (status === "authenticated" && session?.user?.email) {
+    if (status === "authenticated" && session?.user?.id) {
       fetchHistory();
     }
   }, [status, session, fetchHistory]);
 
   async function handleDelete(id: string) {
-    if (!id) return;
+    if (!id || !session?.user?.id) return;
     
     setIsDeleting(id);
     try {
-      await deleteNutritionHistory(id);
+      await deleteNutritionHistory(id, session.user.id);
       setNutritionHistory(prev => prev.filter(item => item.id !== id));
       toast.success("Dieta removida do histórico com sucesso!");
     } catch (error) {
